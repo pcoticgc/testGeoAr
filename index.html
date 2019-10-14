@@ -24,15 +24,26 @@
 		embedded
 		arjs='sourceType: webcam; sourceWidth:1280; sourceHeight:960; displayWidth: 1280; displayHeight: 960; debugUIEnabled: false;'>
     <a-box color="yellow" gps-entity-place="latitude: 45.411893 ; longitude: 2.198467"/>
-    <a-box color="red" gps-entity-place="latitude: 41.411937 ; longitude: 2.198562"/>
-    <a-box color="blue" gps-entity-place="latitude: 41.411937 ; longitude: 2.198562"/>
-    <a-box color="black" gps-entity-place="latitude: 41.412050 ; longitude: 2.198744"/>
-    <a-box color="white" gps-entity-place="latitude: 41.412030 ; longitude: 2.198674"/>
+    <a-box color="red" scale="3 3 3 "gps-entity-place="latitude: 41.411937 ; longitude: 2.198562"/>
+    <a-box color="blue" scale="5 5 5 "gps-entity-place="latitude: 41.411937 ; longitude: 2.198562"/>
+    <a-box color="black" scale="10 10 10 "gps-entity-place="latitude: 41.412050 ; longitude: 2.198744"/>
+    <a-box color="white" scale="100 100 100 "gps-entity-place="latitude: 41.412030 ; longitude: 2.198674"/>
+	
+	<!-- ICGC Scale -->
+	<a-box color="yellow" scale="3 100 3gps-entity-place="latitude: 41.370206 ; longitude: 2.155714"/>
+    <a-box color="red" scale="3 3 3 "gps-entity-place="latitude: 41.370294 ; longitude: 2.155709"/>
+    <a-box color="blue" scale="5 5 5 "gps-entity-place="latitude: 41.370394  ; longitude: 2.155694"/>
+    <a-box color="black" scale="10 10 10 "gps-entity-place="latitude: 41.370426  ; longitude: 2.155651"/>
+    <a-box color="white" scale="100 100 100 "gps-entity-place="latitude: 41.370464  ; longitude: 2.155691"/>
+	
+	<!-- ICGC Scale -->
+	<a-box color="yellow"  width="10" height="10" depth="10" gps-entity-place="latitude: 41.370206 ; longitude: 2.155714"/>
+    <a-box color="red"     width="20" height="20" depth="20" "gps-entity-place="latitude: 41.370294 ; longitude: 2.155709"/>
+    <a-box color="blue"    width="50" height="50" depth="50" "gps-entity-place="latitude: 41.370394  ; longitude: 2.155694"/>
+    <a-box color="black"   width="100" height="100" depth="100" "gps-entity-place="latitude: 41.370426  ; longitude: 2.155651"/>
+    <a-box color="white"   width="10" height="500" depth="10" "gps-entity-place="latitude: 41.370464  ; longitude: 2.155691"/>
 
-    <!-- <a-box color="yellow" scale="2 2 2" gps-entity-place="latitude: 41.411893 ; longitude: 2.198467"/>
-    <a-box color="red" scale="3 3 3 " gps-entity-place="latitude: 41.411937 ; longitude: 2.198562"/>
-    <a-box color="blue" scale="10 10 10" gps-entity-place="latitude: 41.411937 ; longitude: 2.198562"/>
-    <a-box color="black" scale="5 5 5 " gps-entity-place="latitude: 41.412050 ; longitude: 2.198744"/>
+    
     -->
 
         <a-camera gps-camera="minDistance: 40;" rotation-reader>
