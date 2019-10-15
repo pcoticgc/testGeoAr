@@ -1,114 +1,70 @@
 AFRAME.registerComponent('gps-camera-debug', {
-    init: function () {
-        this.current_coords_latitude;
-        this.current_coords_longitude;
-        this.origin_coords_latitude;
-        this.origin_coords_longitude;
-        this.camera_p_x;
-        this.camera_p_z;
-        this.entities = 0;
+	init : function(){
+		var camera = this.el
+		
+		//////////////////////////////////////////////////////////////////////////////
+		//		Create html
+		//////////////////////////////////////////////////////////////////////////////
+		var domElement = document.createElement('div')
+		domElement.innerHTML = `
+		<!-- TODO build that directly in the javascript -->
+		<div style="position: fixed; top: 10px; width:100%; text-align: center; z-index: 1; text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;">
+			<div>
+				current lng/lat coords: <span id="current_coords_longitude"></span>, <span id="current_coords_latitude"></span>
+			</div>
+			<div>
+				origin lng/lat coords: <span id="origin_coords_longitude"></span>, <span id="origin_coords_latitude"></span>
+			</div>
+			<div>
+				camera 3d position: <span id="camera_p_x"></span>, <span id="camera_p_z"></span>
+			<div>
+				compass heading: <span id="compass_heading"></span>,
+				camera angle: <span id="camera_angle"></span>,
+				yaw angle: <span id="yaw_angle"></span>
+			</div>
+		</div>
+		`
+		document.body.appendChild(domElement.children[0])
 
-        // initialize
-        this._buildCameraDebugUI(document.body);
+		// TODO cleanup this code
+		// TODO build the html element in there
 
-        // retrieve specific UI components
-        this.current_coords_latitude = document.querySelector('#current_coords_latitude');
-        this.current_coords_longitude = document.querySelector('#current_coords_longitude');
-        this.origin_coords_latitude = document.querySelector('#origin_coords_latitude');
-        this.origin_coords_longitude = document.querySelector('#origin_coords_longitude');
-        this.camera_p_x = document.querySelector('#camera_p_x');
-        this.camera_p_z = document.querySelector('#camera_p_z');
+		camera.addEventListener('componentchanged', function (event) {
+			switch(event.detail.name){
+				case 'rotation':
+					//console.log('camera rotation changed', event.detail.newData);
+					var compassRotation = camera.components['gps-camera-rotation']
+					var lookControls = camera.components['look-controls']
 
-        this.placesLoadedEventHandler = function() {
-            this.entities++;
-            const entities = document.querySelectorAll('[gps-entity-place]') && document.querySelectorAll('[gps-entity-place]').length || 0;
+					camera_angle.innerText = event.detail.newData.y.toFixed(2)
 
-            if (entities === this.entities) {
-                // all entities added, we can build debug UI
-                this._buildDistancesDebugUI();
-                window.removeEventListener('gps-entity-place-loaded', this.placesLoadedEventHandler.bind(this));
-                window.dispatchEvent(new CustomEvent('debug-ui-added'));
-            }
-        };
+					if( lookControls ){
+						yaw_angle.innerText = THREE.Math.radToDeg(lookControls.yawObject.rotation.y).toFixed(2)
+					}
+					if( compassRotation && compassRotation.heading !== null ){
+						compass_heading.innerText = compassRotation.heading.toFixed(2)
+					}
+					break
+				case 'position':
+					//console.log('camera position changed', event.detail.newData)
+					camera_p_x.innerText = event.detail.newData.x
+					camera_p_z.innerText = event.detail.newData.z
 
-        window.addEventListener('gps-entity-place-loaded', this.placesLoadedEventHandler.bind(this));
-    },
-    tick: function () {
-        const camera = document.querySelector('[gps-camera]');
-        const position = camera.getAttribute('position');
-
-        this.camera_p_x.innerText = position.x.toFixed(6);
-        this.camera_p_z.innerText = position.z.toFixed(6);
-
-        var gpsPosition = camera.components['gps-camera'];
-        if (gpsPosition) {
-            if (gpsPosition.currentCoords) {
-                this.current_coords_longitude.innerText = gpsPosition.currentCoords.longitude.toFixed(6);
-                this.current_coords_latitude.innerText = gpsPosition.currentCoords.latitude.toFixed(6);
-            }
-
-            if (gpsPosition.originCoords) {
-                this.origin_coords_longitude.innerText = gpsPosition.originCoords.longitude.toFixed(6);
-                this.origin_coords_latitude.innerText = gpsPosition.originCoords.latitude.toFixed(6);
-            }
-        }
-    },
-    /**
-     * Build and attach debug UI elements
-     *
-     * @param {HTMLElement} parent parent element where to attach debug UI elements
-     */
-    _buildCameraDebugUI: function(parent) {
-        const container = document.createElement('div');
-        container.classList.add('debug');
-
-        const currentLatLng = document.createElement('div');
-        currentLatLng.innerText = 'current lng/lat coords: ';
-        const spanLng = document.createElement('span');
-        spanLng.id = 'current_coords_longitude';
-        const spanLat = document.createElement('span');
-        spanLat.id = 'current_coords_latitude';
-        currentLatLng.appendChild(spanLng);
-        currentLatLng.appendChild(spanLat);
-
-        container.appendChild(currentLatLng);
-
-        const originLatLng = document.createElement('div');
-        originLatLng.innerText = 'origin lng/lat coords: ';
-        const originSpanLng = document.createElement('span');
-        originSpanLng.id = 'origin_coords_longitude';
-        const originSpanLat = document.createElement('span');
-        originSpanLat.id = 'origin_coords_latitude';
-        originLatLng.appendChild(originSpanLng);
-        originLatLng.appendChild(originSpanLat);
-
-        container.appendChild(originLatLng);
-
-        const cameraDiv = document.createElement('div');
-        cameraDiv.innerText = 'camera 3d position: ';
-        const cameraSpanX = document.createElement('span');
-        cameraSpanX.id = 'camera_p_x';
-        const cameraSpanZ = document.createElement('span');
-        cameraSpanZ.id = 'camera_p_z';
-
-        cameraDiv.appendChild(cameraSpanX);
-        cameraDiv.appendChild(cameraSpanZ);
-        container.appendChild(cameraDiv);
-
-        parent.appendChild(container);
-    },
-    /**
-     * Build distances UI elements
-     * @returns {void}
-     */
-    _buildDistancesDebugUI: function() {
-        const div = document.querySelector('.debug');
-        document.querySelectorAll('[gps-entity-place]').forEach((element) => {
-            const debugDiv = document.createElement('div');
-            debugDiv.classList.add('debug-distance');
-            debugDiv.innerHTML = element.getAttribute('value');
-            debugDiv.setAttribute('value', element.getAttribute('value'));
-            div.appendChild(debugDiv);
-        });
-    },
-});
+					var gpsPosition = camera.components['gps-camera-position']
+					if( gpsPosition ){
+						if(gpsPosition.currentCoords){
+							current_coords_longitude.innerText = gpsPosition.currentCoords.longitude
+							current_coords_latitude.innerText = gpsPosition.currentCoords.latitude
+						}
+						if(gpsPosition.originCoords){
+							origin_coords_longitude.innerText = gpsPosition.originCoords.longitude
+							origin_coords_latitude.innerText = gpsPosition.originCoords.latitude
+						}
+					}
+					
+					break
+			}
+		})
+		
+	}
+})
